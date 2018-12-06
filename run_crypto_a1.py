@@ -1,14 +1,14 @@
 from crypto_env import Crypto
-from DQN_modified import DeepQNetwork
+from DQN_modified_a1 import DeepQNetwork
 
-env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=1000, fee=0.001, drawdown_call=10, fixed_stake=0.001, period=180)
+env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=1000, fee=0.001, drawdown_call=10, fixed_stake=0.001, period=240)
 
 RL = DeepQNetwork(env.n_actions, env.n_features,
                       learning_rate=0.01,
                       reward_decay=0.9,
                       e_greedy=0.9,
                       e_greedy_increment=0.000001,
-                      replace_target_iter=320,
+                      replace_target_iter=640,
                       memory_size=100000,
                       # output_graph=True
                       )
