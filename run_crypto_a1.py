@@ -10,7 +10,7 @@ RL = DeepQNetwork(env.n_actions, env.n_features,
                       e_greedy_increment=0.000001,
                       replace_target_iter=640,
                       memory_size=100000,
-                      # output_graph=True
+                      output_graph=False
                       )
 total_steps = 0
 total_length = env.length
