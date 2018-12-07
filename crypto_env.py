@@ -22,7 +22,7 @@ class Crypto:
 
         self.action_space = ['buy','sell','hold']
         self.n_actions = len(self.action_space)
-        self.n_features = 240 * 9
+        self.n_features = 180 * 9
         self.name = name
         self.step_count = 0
         self.observation = []
@@ -58,7 +58,7 @@ class Crypto:
 
     def reset(self):
         #random episode index
-        self.step_count = random.randint(0,self.length-self.period-9)
+        self.step_count = random.randint(0,self.length-self.period-60)
         #self.step_count = 0
         self.local_step = 0
         self.cash = self.start_cash
@@ -98,16 +98,16 @@ class Crypto:
         #diff_value = self.old_value - self.value
 
         if action == 0:   # buy
-            #if self.cash >= self.value * self.fixed_stake * (1. + self.fee):
-            self.amt += self.fixed_stake
-            self.amt = round(self.amt, 3)
-            self.cash -= self.value * self.fixed_stake *  (1. + self.fee)
+            if self.cash >= self.value * self.fixed_stake * (1. + self.fee):
+                self.amt += self.fixed_stake
+                self.amt = round(self.amt, 3)
+                self.cash -= self.value * self.fixed_stake *  (1. + self.fee)
         elif action == 1:   # sell
-            #if self.amt > 0 :
+            if self.amt > 0 :
                 #sell_amt = self.amt * 0.5
-            self.amt -= self.fixed_stake
-            self.amt = round(self.amt, 3)
-            self.cash += self.value * self.fixed_stake * (1. - self.fee)
+                self.amt -= self.fixed_stake
+                self.amt = round(self.amt, 3)
+                self.cash += self.value * self.fixed_stake * (1. - self.fee)
         elif action == 2:   # hold
             pass
 
@@ -119,11 +119,15 @@ class Crypto:
         self.portfolio = portfolio_next
         self.episode_reward += self.reward
 
-        if self.portfolio < self.start_cash * (self.value/self.start_value)* (1 - self.drawdown_call/100.):
-            self.reward *= 2
+        #if self.portfolio < self.start_cash * (self.value/self.start_value)* (1 - self.drawdown_call/100.):
+        #if self.portfolio < self.start_cash * (1 - self.drawdown_call/100.):
+        #    if self.reward > 0:
+        #        self.reward = -1. * self.reward
+        #    else:
+        #        self.reward *= 2
             #self.done = True
 
-        if self.local_step == 63:
+        if self.local_step == 59:
             self.done = True
 
         self.step_count += 1

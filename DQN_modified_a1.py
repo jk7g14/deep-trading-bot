@@ -28,9 +28,9 @@ class DeepQNetwork:
             replace_target_iter=320,
             memory_size=100000,
             batch_size=64,
-            e_greedy_increment=0.001,
-            output_graph=True,
-            split_size=12,
+            e_greedy_increment=None,
+            output_graph=False,
+            split_size=9,
             window_size=20,
     ):
         self.n_actions = n_actions
@@ -57,11 +57,18 @@ class DeepQNetwork:
         # initialize zero memory [s, a, r, s_]
         self.memory = np.zeros((self.memory_size, n_features * 2 + 2))
 
+        #learning rate
+        self.global_step = tf.Variable(0, trainable=False)
+        self.learning_rate = tf.train.exponential_decay(self.lr, self.global_step,
+                                           100000, 0.96, staircase=True)
+
         # consist of [target_net, evaluate_net]
         self._build_net()
 
         t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='target_net')
         e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='eval_net')
+
+
 
         with tf.variable_scope('soft_replacement'):
             self.target_replace_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
@@ -261,7 +268,7 @@ class DeepQNetwork:
         with tf.variable_scope('loss'):
             self.loss = tf.reduce_mean(tf.squared_difference(self.q_target, self.q_eval_wrt_a, name='TD_error'))
         with tf.variable_scope('train'):
-            self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
+            self._train_op = tf.train.RMSPropOptimizer(self.learning_rate, momentum=0.95, epsilon=0.01).minimize(self.loss)
 
     def store_transition(self, s, a, r, s_):
         if not hasattr(self, 'memory_counter'):
