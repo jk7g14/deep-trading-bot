@@ -292,14 +292,16 @@ class DeepQNetwork:
         return action
     def save(self):
         saver = tf.train.Saver()
-        saver.save(self.sess,'save/test1.ckpt')
+        checkpoint_path = './save/model')
+        saver.save(self.sess, checkpoint_path, global_step=self.global_step)
         print('your weight is saved')
 
     def learn(self):
         # check to replace target parameters
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.sess.run(self.target_replace_op)
-            #print('\ntarget_params_replaced\n')
+            self.save()
+            print('\ntarget_params_replaced\n')
 
         # sample batch memory from all memory
         if self.memory_counter > self.memory_size:
