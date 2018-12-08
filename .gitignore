@@ -102,6 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# rubbish
 test.csv
 bitcoin-historical-data.zip
 bitstampUSD_1-min_data_2012-01-01_to_2018-11-11.csv

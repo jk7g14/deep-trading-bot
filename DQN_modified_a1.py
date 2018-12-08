@@ -292,7 +292,7 @@ class DeepQNetwork:
         return action
     def save(self):
         saver = tf.train.Saver()
-        checkpoint_path = './save/model')
+        checkpoint_path = './save/model'
         saver.save(self.sess, checkpoint_path, global_step=self.global_step)
         print('your weight is saved')
 

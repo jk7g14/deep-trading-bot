@@ -14,7 +14,7 @@ RL = DeepQNetwork(env.n_actions, env.n_features,
                       )
 total_steps = 0
 total_length = env.length
-
+profit = 0.0
 for i_episode in range(total_length):
 
     observation = env.reset()
@@ -49,10 +49,12 @@ for i_episode in range(total_length):
         #    done = True
 
         if done:
+            profit += (env.portfolio - 1000)
             print('episode: %d/%d'%(i_episode,total_length),
                   'ep_r: ', round(ep_r, 2),
                   'portfolio: ', env.portfolio,
-                  ' epsilon: ', round(RL.epsilon,6))
+                  ' epsilon: ', round(RL.epsilon,6),
+                  ' profit: ', profit)
             break
 
         observation = observation_
