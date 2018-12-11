@@ -1,20 +1,21 @@
-from crypto_env import Crypto
+from crypto_env_a1 import Crypto
 from DQN_modified_a1 import DeepQNetwork
+import numpy as np
 
-env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=1000, fee=0.001, drawdown_call=0.1, fixed_stake=0.0005, period=180)
+env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=1000, fee=0.001, drawdown_call=0.0001, fixed_stake=0.0005, period=240)
 
 RL = DeepQNetwork(env.n_actions, env.n_features,
                       learning_rate=0.01,
                       reward_decay=0.9,
                       e_greedy=0.9,
-                      #e_greedy_increment=0.00001,
+                      e_greedy_increment=0.0001,
                       replace_target_iter=5000,
                       memory_size=100000,
                       output_graph=True
                       )
 total_steps = 0
 total_length = env.length
-profit = 0.0
+profit = []
 for i_episode in range(total_length):
 
     observation = env.reset()
@@ -49,12 +50,15 @@ for i_episode in range(total_length):
         #    done = True
 
         if done:
-            profit += (env.portfolio - 1000)
+            profit.append(env.portfolio - 1000)
             print('episode: %d/%d'%(i_episode,total_length),
                   'ep_r: ', round(ep_r, 2),
-                  'portfolio: ', env.portfolio,
-                  ' epsilon: ', round(RL.epsilon,6),
-                  ' profit: ', profit)
+                  'portfolio: ', round(env.portfolio,6),
+                  'epsilon: ', round(RL.epsilon,6),
+                  #'learning_rate: ', RL.lr2,
+                  'avg profit: ', round(np.mean(profit),6),
+                  'amt: ', round(env.amt,8),
+                  'value: ', round(env.next_value,8))
             break
 
         observation = observation_

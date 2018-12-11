@@ -30,7 +30,7 @@ class DeepQNetwork:
             batch_size=64,
             e_greedy_increment=None,
             output_graph=False,
-            split_size=9,
+            split_size=12,
             window_size=20,
     ):
         self.n_actions = n_actions
@@ -45,7 +45,8 @@ class DeepQNetwork:
         self.window_size = window_size
         self.channels = 9
         self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0.5 if e_greedy_increment is not None else self.epsilon_max
+        self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
+        self.lr2 = 0
 
         self.conv_keep_prob = 0.9
         self.gru_keep_prob = 0.5
@@ -268,7 +269,7 @@ class DeepQNetwork:
         with tf.variable_scope('loss'):
             self.loss = tf.reduce_mean(tf.squared_difference(self.q_target, self.q_eval_wrt_a, name='TD_error'))
         with tf.variable_scope('train'):
-            self._train_op = tf.train.RMSPropOptimizer(self.learning_rate, momentum=0.95, epsilon=0.01).minimize(self.loss)
+            self._train_op = tf.train.RMSPropOptimizer(self.lr, momentum=0.95, epsilon=0.01).minimize(self.loss, global_step=self.global_step)
 
     def store_transition(self, s, a, r, s_):
         if not hasattr(self, 'memory_counter'):
@@ -324,6 +325,7 @@ class DeepQNetwork:
         # increasing epsilon
         self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
         self.learn_step_counter += 1
+
 
     def plot_cost(self):
         import matplotlib.pyplot as plt
