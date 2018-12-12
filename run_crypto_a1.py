@@ -2,15 +2,15 @@ from crypto_env_a1 import Crypto
 from DQN_modified_a1 import DeepQNetwork
 import numpy as np
 
-env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=1000, fee=0.001, drawdown_call=0.0001, fixed_stake=0.0005, period=240)
+env = Crypto(name='BTC-USD', data_path='./test.csv', start_cash=7000, fee=0.001, drawdown_call=0.0001, fixed_stake=0.0005, period=240)
 
 RL = DeepQNetwork(env.n_actions, env.n_features,
                       learning_rate=0.01,
                       reward_decay=0.9,
                       e_greedy=0.9,
-                      e_greedy_increment=0.0001,
-                      replace_target_iter=5000,
-                      memory_size=100000,
+                      e_greedy_increment=0.001,
+                      replace_target_iter=300,
+                      memory_size=30000,
                       output_graph=True
                       )
 total_steps = 0
@@ -50,7 +50,7 @@ for i_episode in range(total_length):
         #    done = True
 
         if done:
-            profit.append(env.portfolio - 1000)
+            profit.append(env.portfolio - 7000)
             print('episode: %d/%d'%(i_episode,total_length),
                   'ep_r: ', round(ep_r, 2),
                   'portfolio: ', round(env.portfolio,6),

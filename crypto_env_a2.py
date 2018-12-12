@@ -20,10 +20,8 @@ class Crypto:
         self.portfolio = start_cash
         self.length = 0
 
-        #9 actions
-        self.action_space = ['buy10','buy25','buy50','buy100',
-                            'sell10','sell25','sell50','sell100',
-                            'hold']
+        #3 actions
+        self.action_space = ['buy','sell','hold']
         
         self.n_actions = len(self.action_space)
         self.n_features = period * 9
@@ -110,67 +108,23 @@ class Crypto:
     def step(self, action):
         #old_portfolio = self.portfolio
         #diff_value = self.old_value - self.value
-        buy_price = self.value * (1. + self.fee)
+        #buy_price = self.value * (1. + self.fee)
 
-        if action == 0:   # buy10
-            buy_amt = round(self.cash * 0.1 / buy_price, 8)
-            if self.cash >= buy_amt * buy_price:
-                self.amt += buy_amt
+        if action == 0:   # buy
+            if self.cash >= self.value * self.fixed_stake * (1. + self.fee):
+                self.amt += self.fixed_stake
                 #self.amt = round(self.amt, 8)
-                self.cash -= buy_price * buy_amt
-        elif action == 1:   # buy25
-            buy_amt = round(self.cash * 0.25 / buy_price, 8)
-            if self.cash >= buy_amt * buy_price:
-                self.amt += buy_amt
-                #self.amt = round(self.amt, 8)
-                self.cash -= buy_price * buy_amt
-        elif action == 2:   # buy50
-            buy_amt = round(self.cash * 0.50 / buy_price, 8)
-            if self.cash >= buy_amt * buy_price:
-                self.amt += buy_amt
-                #self.amt = round(self.amt, 8)
-                self.cash -= buy_price * buy_amt
-        elif action == 3:   # buy100
-            buy_amt = round(self.cash * 1.0 / buy_price, 8)
-            if self.cash >= buy_amt * buy_price:
-                self.amt += buy_amt
-                #self.amt = round(self.amt, 8)
-                self.cash -= buy_price * buy_amt
-        elif action == 4:   # sell10
+                self.cash -= self.value * self.fixed_stake *  (1. + self.fee)
+        elif action == 1:   # sell
             if self.amt > 0 :
-                sell_amt = round(self.amt * 0.1 ,8)
-                #self.amt -= self.fixed_stake
-                self.amt -= sell_amt
+                #sell_amt = self.amt * 0.5
+                self.amt -= self.fixed_stake
+                #self.amt -= sell_amt
                 #self.amt = round(self.amt, 8)
-                #self.cash += self.value * self.fixed_stake * (1. - self.fee)
-                self.cash += self.value * sell_amt * (1. - self.fee)
-        elif action == 5:   # sell25
-            if self.amt > 0 :
-                sell_amt = round(self.amt * 0.25 ,8)
-                #self.amt -= self.fixed_stake
-                self.amt -= sell_amt
-                #self.amt = round(self.amt, 8)
-                #self.cash += self.value * self.fixed_stake * (1. - self.fee)
-                self.cash += self.value * sell_amt * (1. - self.fee)
-        elif action == 6:   # sell50
-            if self.amt > 0 :
-                sell_amt = round(self.amt * 0.5 ,8)
-                #self.amt -= self.fixed_stake
-                self.amt -= sell_amt
-                #self.amt = round(self.amt, 8)
-                #self.cash += self.value * self.fixed_stake * (1. - self.fee)
-                self.cash += self.value * sell_amt * (1. - self.fee)
-        elif action == 7:   # sell100
-            if self.amt > 0 :
-                sell_amt = round(self.amt * 1.0 ,8)
-                #self.amt -= self.fixed_stake
-                self.amt -= sell_amt
-                #self.amt = round(self.amt, 8)
-                #self.cash += self.value * self.fixed_stake * (1. - self.fee)
-                self.cash += self.value * sell_amt * (1. - self.fee)
-        elif action == 8:   # hold
+                self.cash += self.value * self.fixed_stake * (1. - self.fee)
+                #self.cash += self.value * sell_amt * (1. - self.fee)
+        elif action == 2:   # hold
             pass
-
         self.portfolio = self.cash + self.amt * self.value
         portfolio_next = self.cash + self.amt * self.value_next
         #self.reward = float(np.log(self.portfolio/self.start_cash))
