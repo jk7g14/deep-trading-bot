@@ -60,7 +60,7 @@ for i_episode in range(total_length):
                   'ep_r: ', round(ep_r, 4),
                   'portfolio: ', round(env.portfolio,6),
                   'epsilon: ', round(RL.epsilon,6),
-                  'learning_rate: ', RL.lr2,
+                  #'learning_rate: ', RL.lr2,
                   'avg profit: ', round(np.mean(profit),6),
                   'amt: ', round(env.amt,8),
                   'value: ', round(env.next_value,8))
