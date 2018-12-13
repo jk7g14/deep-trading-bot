@@ -70,7 +70,7 @@ class Crypto:
 
     def reset(self):
         #random episode index
-        self.step_count = random.randint(0,self.length-self.period-60)
+        self.step_count = random.randint(0,self.length-self.period-24)
         #self.step_count = 0
         self.local_step = 0
         self.cash = self.start_cash
@@ -109,6 +109,7 @@ class Crypto:
         #old_portfolio = self.portfolio
         #diff_value = self.old_value - self.value
         #buy_price = self.value * (1. + self.fee)
+        self.fixed_stake = round(self.start_cash / self.value / 3., 8)
 
         if action == 0:   # buy
             if self.cash >= self.value * self.fixed_stake * (1. + self.fee):
@@ -116,7 +117,7 @@ class Crypto:
                 #self.amt = round(self.amt, 8)
                 self.cash -= self.value * self.fixed_stake *  (1. + self.fee)
         elif action == 1:   # sell
-            if self.amt > 0 :
+            if self.amt > self.fixed_stake :
                 #sell_amt = self.amt * 0.5
                 self.amt -= self.fixed_stake
                 #self.amt -= sell_amt
@@ -128,10 +129,10 @@ class Crypto:
         self.portfolio = self.cash + self.amt * self.value
         portfolio_next = self.cash + self.amt * self.value_next
         #self.reward = float(np.log(self.portfolio/self.start_cash))
-        #self.reward = float(np.log(self.portfolio / old_portfolio))
-        self.reward = portfolio_next - self.portfolio
+        #self.reward = float(np.log(portfolio_next / self.portfolio))
+        self.reward = (portfolio_next - self.portfolio) * 100
         self.portfolio = portfolio_next
-        self.episode_reward += self.reward
+        #self.episode_reward += self.reward
 
         #if self.portfolio < self.start_cash * (self.value/self.start_value)* (1 - self.drawdown_call/100.):
         #if self.portfolio < self.start_cash:
